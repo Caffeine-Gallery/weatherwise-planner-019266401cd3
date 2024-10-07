@@ -1,6 +1,5 @@
 import Bool "mo:base/Bool";
 import Hash "mo:base/Hash";
-import Nat64 "mo:base/Nat64";
 
 import Debug "mo:base/Debug";
 import HashMap "mo:base/HashMap";
@@ -9,11 +8,6 @@ import Array "mo:base/Array";
 import Text "mo:base/Text";
 import Nat "mo:base/Nat";
 import Time "mo:base/Time";
-import Int "mo:base/Int";
-import Float "mo:base/Float";
-import Result "mo:base/Result";
-import Error "mo:base/Error";
-import IC "mo:ic";
 
 actor {
   type Note = {
@@ -25,7 +19,6 @@ actor {
   type Day = {
     date: Text;
     notes: [Note];
-    weather: ?Text;
   };
 
   stable var noteIdCounter : Nat = 0;
@@ -44,7 +37,6 @@ actor {
         let newDay : Day = {
           date = date;
           notes = [newNote];
-          weather = null;
         };
         days.put(date, newDay);
       };
@@ -53,7 +45,6 @@ actor {
         let updatedDay : Day = {
           date = existingDay.date;
           notes = updatedNotes;
-          weather = existingDay.weather;
         };
         days.put(date, updatedDay);
       };
@@ -87,7 +78,6 @@ actor {
         let updatedDay : Day = {
           date = existingDay.date;
           notes = updatedNotes;
-          weather = existingDay.weather;
         };
         days.put(date, updatedDay);
         true
@@ -104,66 +94,5 @@ actor {
         })
       };
     };
-  };
-
-  public func setWeather(date: Text, weather: Text) : async () {
-    switch (days.get(date)) {
-      case (null) {
-        let newDay : Day = {
-          date = date;
-          notes = [];
-          weather = ?weather;
-        };
-        days.put(date, newDay);
-      };
-      case (?existingDay) {
-        let updatedDay : Day = {
-          date = existingDay.date;
-          notes = existingDay.notes;
-          weather = ?weather;
-        };
-        days.put(date, updatedDay);
-      };
-    };
-  };
-
-  public query func getWeather(date: Text) : async ?Text {
-    switch (days.get(date)) {
-      case (null) { null };
-      case (?day) { day.weather };
-    };
-  };
-
-  public func getWeatherForecast(location: Text) : async Result.Result<Text, Text> {
-    let ic : IC.Service = actor("aaaaa-aa");
-    let url = "https://wttr.in/" # location # "?format=%C+%t";
-
-    try {
-      let response = await ic.http_request({
-        url = url;
-        method = #get;
-        body = null;
-        headers = [];
-        transform = null;
-        max_response_bytes = ?(2000 : Nat64);
-      });
-
-      if (response.status == 200) {
-        switch (Text.decodeUtf8(response.body)) {
-          case (null) { #err("Failed to decode response body") };
-          case (?decodedText) {
-            if (Text.contains(decodedText, #text "Unknown location")) {
-              #err("Invalid location: " # location)
-            } else {
-              #ok(decodedText)
-            }
-          };
-        }
-      } else {
-        #err("Error fetching weather data: HTTP status " # Int.toText(response.status))
-      }
-    } catch (error) {
-      #err("Error fetching weather data: " # Error.message(error))
-    }
   };
 }

@@ -11,13 +11,10 @@ let currentYear, currentMonth;
 const calendar = document.getElementById('calendar');
 const dayDetail = document.getElementById('day-detail');
 const detailDate = document.getElementById('detail-date');
-const detailWeather = document.getElementById('detail-weather');
 const notesList = document.getElementById('notes-list');
 const noteInput = document.getElementById('note-input');
 const addNoteBtn = document.getElementById('add-note-btn');
 const closeDetailBtn = document.getElementById('close-detail');
-const locationInput = document.getElementById('location');
-const updateWeatherBtn = document.getElementById('update-weather');
 
 function renderCalendar(year, month) {
     currentYear = year;
@@ -72,9 +69,6 @@ async function showDayDetail(year, month, day) {
     detailDate.textContent = `${monthNames[month]} ${day}, ${year}`;
     dayDetail.classList.remove('hidden');
 
-    const weather = await backend.getWeather(date);
-    detailWeather.textContent = weather ? `Weather: ${weather}` : 'No weather data available';
-
     const notes = await backend.getNotes(date);
     renderNotes(notes);
 
@@ -117,22 +111,6 @@ async function updateNoteStatus(noteId, isCompleted) {
 
 closeDetailBtn.addEventListener('click', () => {
     dayDetail.classList.add('hidden');
-});
-
-updateWeatherBtn.addEventListener('click', async () => {
-    const location = locationInput.value.trim();
-    if (location) {
-        const result = await backend.getWeatherForecast(location);
-        if (result.ok) {
-            const weather = result.ok;
-            const date = `${currentYear}-${currentMonth + 1}-${new Date().getDate()}`;
-            await backend.setWeather(date, weather);
-            alert(`Weather updated for ${location}: ${weather}`);
-            renderCalendar(currentYear, currentMonth);
-        } else {
-            alert(`Failed to fetch weather: ${result.err}`);
-        }
-    }
 });
 
 const currentDate = new Date();

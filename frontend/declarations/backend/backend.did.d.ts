@@ -7,15 +7,10 @@ export interface Note {
   'content' : string,
   'isCompleted' : boolean,
 }
-export type Result = { 'ok' : string } |
-  { 'err' : string };
 export interface _SERVICE {
   'addNote' : ActorMethod<[string, string], bigint>,
   'getIncompleteNoteCount' : ActorMethod<[string], bigint>,
   'getNotes' : ActorMethod<[string], Array<Note>>,
-  'getWeather' : ActorMethod<[string], [] | [string]>,
-  'getWeatherForecast' : ActorMethod<[string], Result>,
-  'setWeather' : ActorMethod<[string, string], undefined>,
   'updateNoteStatus' : ActorMethod<[string, bigint, boolean], boolean>,
 }
 export declare const idlFactory: IDL.InterfaceFactory;

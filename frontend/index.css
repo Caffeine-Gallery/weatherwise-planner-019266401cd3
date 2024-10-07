@@ -19,17 +19,6 @@ h1 {
     color: #333;
 }
 
-#location-input {
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-}
-
-#location-input input {
-    padding: 5px;
-    margin-right: 10px;
-}
-
 #calendar {
     margin-bottom: 20px;
 }
