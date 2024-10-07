@@ -1,0 +1,20 @@
+type Result = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type Note = 
+ record {
+   content: text;
+   id: nat;
+   isCompleted: bool;
+ };
+service : {
+  addNote: (text, text) -> (nat);
+  getIncompleteNoteCount: (text) -> (nat) query;
+  getNotes: (text) -> (vec Note) query;
+  getWeather: (text) -> (opt text) query;
+  getWeatherForecast: (text) -> (Result);
+  setWeather: (text, text) -> ();
+  updateNoteStatus: (text, nat, bool) -> (bool);
+}
