@@ -136,7 +136,7 @@ actor {
 
   public func getWeatherForecast(location: Text) : async Result.Result<Text, Text> {
     let ic : IC.Service = actor("aaaaa-aa");
-    let url = "https://api.openweathermap.org/data/2.5/weather?q=" # location # "&appid=YOUR_API_KEY&units=metric";
+    let url = "https://wttr.in/" # location # "?format=%C+%t";
 
     try {
       let response = await ic.http_request({
@@ -148,10 +148,16 @@ actor {
         max_response_bytes = ?(2000 : Nat64);
       });
 
-      if (response.status >= 200 and response.status < 300) {
+      if (response.status == 200) {
         switch (Text.decodeUtf8(response.body)) {
           case (null) { #err("Failed to decode response body") };
-          case (?decodedText) { #ok(decodedText) };
+          case (?decodedText) {
+            if (Text.contains(decodedText, #text "Unknown location")) {
+              #err("Invalid location: " # location)
+            } else {
+              #ok(decodedText)
+            }
+          };
         }
       } else {
         #err("Error fetching weather data: HTTP status " # Int.toText(response.status))

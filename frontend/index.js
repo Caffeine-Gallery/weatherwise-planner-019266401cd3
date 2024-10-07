@@ -124,8 +124,7 @@ updateWeatherBtn.addEventListener('click', async () => {
     if (location) {
         const result = await backend.getWeatherForecast(location);
         if (result.ok) {
-            const weatherData = JSON.parse(result.ok);
-            const weather = `${weatherData.weather[0].main}, ${weatherData.main.temp}°C`;
+            const weather = result.ok;
             const date = `${currentYear}-${currentMonth + 1}-${new Date().getDate()}`;
             await backend.setWeather(date, weather);
             alert(`Weather updated for ${location}: ${weather}`);
